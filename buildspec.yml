@@ -4,7 +4,7 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Docker Hub
-      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
+      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login docker.io -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
 
   build:
     commands:
@@ -13,6 +13,6 @@ phases:
 
   post_build:
     commands:
-      - echo Pushing Docker image
-      - docker tag myapp:latest <dockerhub-username>/myapp:latest
-      - docker push <dockerhub-username>/myapp:latest
+      - echo Tagging and pushing image
+      - docker tag myapp:latest $DOCKER_REGISTRY_USERNAME/myapp:latest
+      - docker push $DOCKER_REGISTRY_USERNAME/myapp:latest
