@@ -1,44 +1,18 @@
 version: 0.2
 
-env:
-  parameter-store:
-    DOCKER_REGISTRY_USERNAME: /myapp/docker-credentials/username
-    DOCKER_REGISTRY_PASSWORD: /myapp/docker-credentials/password
-    DOCKER_REGISTRY_URL: /myapp/docker-registry/url
-
 phases:
-  install:
-    runtime-versions:
-      nodejs: 12
+  pre_build:
     commands:
-      - echo Installing dependencies...
-      - npm config set registry https://registry.npmjs.org/
-
-pre_build:
-  commands:
-    - echo Logging in to Docker Hub...
-    - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
-
+      - echo Logging in to Docker Hub
+      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
 
   build:
     commands:
-      - echo Build started on `date`
-      - echo Creating zip artifact...
-      - zip -r online-shop-app.zip .
-      - echo Building Docker image...
-      - docker build -t $IMAGE_NAME .
+      - echo Building Docker image
+      - docker build -t myapp:latest .
 
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing Docker image...
-      - docker push $IMAGE_NAME
-      - echo Uploading zip to S3...
-      - aws s3 cp online-shop-app.zip s3://my-bucket526/online-shop-app/
-      - echo Writing ECS image definition...
-      - printf '[{"name":"online-shop-container","imageUri":"%s"}]' $IMAGE_NAME > imageDefinitions.json
-      - cat imageDefinitions.json
-
-artifacts:
-  files:
-    - imageDefinitions.json
+      - echo Pushing Docker image
+      - docker tag myapp:latest <dockerhub-username>/myapp:latest
+      - docker push <dockerhub-username>/myapp:latest
