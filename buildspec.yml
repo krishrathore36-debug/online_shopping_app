@@ -2,11 +2,11 @@ version: 0.2
 
 phases:
   pre_build:
-  commands:
-    - echo "===== DEBUG INFO ====="
-    - echo "USERNAME -> $DOCKER_REGISTRY_USERNAME"
-    - echo "PASSWORD LENGTH -> ${#DOCKER_REGISTRY_PASSWORD}"
-    - echo "======================"
+    commands:
+      - echo "===== DEBUG INFO ====="
+      - echo "USERNAME -> $DOCKER_REGISTRY_USERNAME"
+      - echo "PASSWORD LENGTH -> ${#DOCKER_REGISTRY_PASSWORD}"
+      - echo "======================"
 
   build:
     commands:
