@@ -11,7 +11,8 @@ phases:
   build:
     commands:
       - docker build -t myapp:latest .
-  post_build:
-    commands:
-      - docker tag myapp:latest $DOCKER_USER/myapp:latest
-      - docker push $DOCKER_USER/myapp:latest
+post_build:
+  commands:
+    - docker tag myapp:latest $DOCKER_REGISTRY_USERNAME/myapp:latest
+    - docker push $DOCKER_REGISTRY_USERNAME/myapp:latest
+
