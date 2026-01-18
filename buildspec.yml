@@ -3,11 +3,10 @@ env:
   parameter-store:
     DOCKER_USER: "/myapp/docker-credentials/username"
     DOCKER_PASS: "/myapp/docker-credentials/password"
-
 phases:
   pre_build:
     commands:
-      - echo "DEBUG: Docker user is '$DOCKER_USER'"
+      - echo "Logging into Docker"
       - echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
   build:
     commands:
@@ -16,4 +15,3 @@ phases:
     commands:
       - docker tag myapp:latest $DOCKER_USER/myapp:latest
       - docker push $DOCKER_USER/myapp:latest
-      - echo "SUCCESS: Build completed!"
