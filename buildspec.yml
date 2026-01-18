@@ -9,11 +9,9 @@ phases:
     commands:
       - echo "DEBUG: Docker user is '$DOCKER_USER'"
       - echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-
   build:
     commands:
       - docker build -t myapp:latest .
-
   post_build:
     commands:
       - docker tag myapp:latest $DOCKER_USER/myapp:latest
