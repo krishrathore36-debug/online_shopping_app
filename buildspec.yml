@@ -2,9 +2,11 @@ version: 0.2
 
 phases:
   pre_build:
-    commands:
-      - echo Logging in to Docker Hub
-      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login docker.io -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
+  commands:
+    - echo "===== DEBUG INFO ====="
+    - echo "USERNAME -> $DOCKER_REGISTRY_USERNAME"
+    - echo "PASSWORD LENGTH -> ${#DOCKER_REGISTRY_PASSWORD}"
+    - echo "======================"
 
   build:
     commands:
