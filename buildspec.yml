@@ -1,20 +1,51 @@
 version: 0.2
+env:
+  parameter-store:
+    DOCKER_REGISTRY_USERNAME: "/myapp/docker-credentials/username"
+    DOCKER_REGISTRY_PASSWORD: "/myapp/docker-credentials/password"
+    # Optional, since docker.io is default
+    DOCKER_REGISTRY_URL: "/myapp/docker-registry/url"
 
 phases:
   pre_build:
     commands:
-      - echo "===== DEBUG INFO ====="
-      - echo "USERNAME -> $DOCKER_REGISTRY_USERNAME"
-      - echo "PASSWORD LENGTH -> ${#DOCKER_REGISTRY_PASSWORD}"
-      - echo "======================"
+      - echo "===== DEBUG: Checking parameters ====="
+      - echo "Username: $DOCKER_REGISTRY_USERNAME"
+      - echo "Password length: ${#DOCKER_REGISTRY_PASSWORD}"
+      - echo "Registry URL: $DOCKER_REGISTRY_URL"
+      - echo "====================================="
+      
+      # Validate parameters are loaded
+      - |
+        if [ -z "$DOCKER_REGISTRY_USERNAME" ]; then
+          echo "ERROR: DOCKER_REGISTRY_USERNAME is empty!"
+          exit 1
+        fi
+      - |
+        if [ -z "$DOCKER_REGISTRY_PASSWORD" ]; then
+          echo "ERROR: DOCKER_REGISTRY_PASSWORD is empty!"
+          exit 1
+        fi
+      
+      # Login to DockerHub (docker.io)
+      - echo "Logging into DockerHub..."
+      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login --username $DOCKER_REGISTRY_USERNAME --password-stdin
+      
+      # Verify login succeeded
+      - docker login
 
   build:
     commands:
-      - echo Building Docker image
+      - echo "Building Docker image..."
       - docker build -t myapp:latest .
 
   post_build:
     commands:
-      - echo Tagging and pushing image
+      - echo "Tagging image for DockerHub..."
+      # Tag with DockerHub username
       - docker tag myapp:latest $DOCKER_REGISTRY_USERNAME/myapp:latest
+      
+      - echo "Pushing to DockerHub..."
       - docker push $DOCKER_REGISTRY_USERNAME/myapp:latest
+      
+      - echo "Build completed successfully!"
